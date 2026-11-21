@@ -1,0 +1,611 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<title>自助報到發卡流程</title>
+<style>
+  :root {
+    --ground:      #f2f3f0;
+    --surface:     #ffffff;
+    --surface-2:   #eaece7;
+    --surface-3:   #e0e3dc;
+    --ink:         #1b1f23;
+    --ink-soft:    #565d64;
+    --ink-faint:   #868d92;
+    --line:        #d3d7d0;
+    --line-soft:   #e3e6df;
+
+    --brass:       #9a6a1e;
+    --brass-deep:  #7d550f;
+    --brass-wash:  #f2e7d0;
+
+    --steel:       #37687f;
+    --steel-wash:  #dfeaf0;
+
+    --ok:          #2f7a4c;
+    --ok-wash:     #dcefe1;
+    --warn:        #a9781f;
+    --warn-wash:   #f4e8cf;
+    --err:         #ad3a37;
+    --err-wash:    #f4dedc;
+    --info:        #3a6480;
+    --info-wash:   #dde9f0;
+
+    --shadow:      0 1px 2px rgba(20,24,28,.06), 0 8px 24px -12px rgba(20,24,28,.18);
+    --radius:      10px;
+    --maxw:        1120px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:    #15181b;
+      --surface:   #1d2126;
+      --surface-2: #252a30;
+      --surface-3: #2d333a;
+      --ink:       #e7eae5;
+      --ink-soft:  #a4aaa2;
+      --ink-faint: #7b8179;
+      --line:      #333940;
+      --line-soft: #272c32;
+      --brass:      #d6a44e;
+      --brass-deep: #e6bd74;
+      --brass-wash: #33290f;
+      --steel:      #6ba1bd;
+      --steel-wash: #1a2c36;
+      --ok:         #5cbb7f;
+      --ok-wash:    #16281c;
+      --warn:       #d6a44e;
+      --warn-wash:  #2e2610;
+      --err:        #e0716c;
+      --err-wash:   #2f1615;
+      --info:       #6ba1bd;
+      --info-wash:  #14262f;
+      --shadow:     0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:    #15181b;
+    --surface:   #1d2126;
+    --surface-2: #252a30;
+    --surface-3: #2d333a;
+    --ink:       #e7eae5;
+    --ink-soft:  #a4aaa2;
+    --ink-faint: #7b8179;
+    --line:      #333940;
+    --line-soft: #272c32;
+    --brass:      #d6a44e;
+    --brass-deep: #e6bd74;
+    --brass-wash: #33290f;
+    --steel:      #6ba1bd;
+    --steel-wash: #1a2c36;
+    --ok:         #5cbb7f;
+    --ok-wash:    #16281c;
+    --warn:       #d6a44e;
+    --warn-wash:  #2e2610;
+    --err:        #e0716c;
+    --err-wash:   #2f1615;
+    --info:       #6ba1bd;
+    --info-wash:  #14262f;
+    --shadow:     0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, "Noto Sans TC", sans-serif;
+    font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  h1, h2, h3 { text-wrap: balance; margin: 0; font-weight: 600; letter-spacing: -.01em; }
+  h1 { font-size: clamp(1.9rem, 1.2rem + 2.6vw, 3rem); line-height: 1.08; letter-spacing: -.02em; }
+  h2 { font-size: clamp(1.3rem, 1rem + 1vw, 1.7rem); }
+  h3 { font-size: 1.02rem; }
+  p  { margin: 0; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .72rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--brass-deep);
+  }
+  .lead { color: var(--ink-soft); font-size: clamp(1rem, .95rem + .3vw, 1.15rem); max-width: 64ch; }
+
+  header.hero {
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--brass-wash) 55%, var(--surface)) 0%, var(--surface) 78%);
+    position: relative;
+  }
+  .hero-inner { padding: clamp(40px, 6vw, 84px) 0 clamp(30px, 4vw, 52px); }
+  .hero h1 { margin-top: 14px; max-width: 20ch; }
+  .hero .lead { margin-top: 18px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+  .chip {
+    font-family: "IBM Plex Mono", monospace; font-size: .78rem; font-weight: 500;
+    padding: 5px 11px; border-radius: 100px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-soft);
+  }
+  .chip b { color: var(--ink); font-weight: 600; }
+  .toggle {
+    position: absolute; top: 18px; right: 24px; display: inline-flex; align-items: center; gap: 6px;
+    font-family: "IBM Plex Mono", monospace; font-size: .74rem;
+    background: var(--surface); border: 1px solid var(--line); color: var(--ink-soft);
+    border-radius: 100px; padding: 6px 12px; cursor: pointer;
+  }
+  .toggle:hover { color: var(--ink); border-color: var(--brass); }
+  .toggle:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+
+  section { padding: clamp(44px, 6vw, 76px) 0; border-bottom: 1px solid var(--line-soft); }
+  .sec-head { margin-bottom: 30px; }
+  .sec-head h2 { margin-top: 8px; }
+  .sec-head p { margin-top: 12px; }
+
+  figure { margin: 0; }
+  figcaption { margin-top: 14px; color: var(--ink-soft); font-size: .9rem; max-width: 68ch; }
+  figcaption b { color: var(--ink); font-weight: 600; }
+
+  /* mermaid on a light paper surface so it stays legible in dark mode too */
+  .mermaid-paper {
+    background: #ffffff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: clamp(16px, 3vw, 30px); box-shadow: var(--shadow); overflow-x: auto;
+  }
+  .mermaid-paper pre.mermaid { margin: 0; background: transparent; text-align: center; }
+  .paper-note { margin-top: 10px; font-size: .78rem; color: var(--ink-faint); font-family: "IBM Plex Mono", monospace; }
+
+  /* legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 0 0 18px; font-size: .82rem; color: var(--ink-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .sw { width: 22px; height: 13px; border-radius: 3px; border: 1.5px solid; display: inline-block; }
+  .sw.ok   { background: var(--ok-wash);   border-color: var(--ok); }
+  .sw.warn { background: var(--warn-wash); border-color: var(--warn); }
+  .sw.err  { background: var(--err-wash);  border-color: var(--err); }
+  .sw.proc { background: var(--surface-2); border-color: var(--ink-faint); }
+
+  /* pipeline */
+  .pipe { display: grid; gap: 10px; }
+  .step {
+    display: grid; grid-template-columns: 44px 150px 1fr; gap: 16px; align-items: center;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px;
+  }
+  .step .num {
+    font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: .9rem; color: var(--brass-deep);
+    width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px;
+    background: var(--brass-wash); border: 1px solid color-mix(in srgb, var(--brass) 40%, var(--line));
+  }
+  .step .nm { font-weight: 600; }
+  .step .nm .mono { display: block; font-family: "IBM Plex Mono", monospace; font-size: .72rem; color: var(--ink-soft); font-weight: 500; margin-top: 1px; }
+  .step .ds { font-size: .88rem; color: var(--ink-soft); }
+  .step .ds b { color: var(--ink); font-weight: 600; }
+
+  /* tables */
+  .tbl-frame { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 680px; }
+  th, td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--line-soft); vertical-align: top; font-size: .89rem; }
+  thead th { font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600; background: var(--surface-2); }
+  tbody tr:last-child td { border-bottom: none; }
+  td.dim { color: var(--ink-soft); }
+  td b { color: var(--ink); font-weight: 600; }
+  td .mono, th .mono { font-family: "IBM Plex Mono", monospace; font-size: .82rem; }
+  .pill { display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: .7rem; font-weight: 600; padding: 2px 8px; border-radius: 100px; white-space: nowrap; }
+  .pill.stop { background: var(--err-wash); color: var(--err); }
+  .pill.swap { background: var(--warn-wash); color: var(--warn); }
+  .pill.retry { background: var(--info-wash); color: var(--info); }
+
+  /* card format */
+  .cardviz { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .cardviz .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; }
+  .cardviz h3 { margin-bottom: 6px; }
+  .cardviz p { font-size: .88rem; color: var(--ink-soft); margin-top: 8px; }
+  .cardviz p .mono { font-family: "IBM Plex Mono", monospace; font-size: .82rem; color: var(--ink); }
+  .sector {
+    margin-top: 14px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;
+    font-family: "IBM Plex Mono", monospace; font-size: .68rem;
+  }
+  .blk { border: 1px solid var(--line); border-radius: 5px; padding: 7px 6px; text-align: center; background: var(--surface-2); color: var(--ink-soft); line-height: 1.3; }
+  .blk .bn { display: block; color: var(--ink-faint); font-size: .62rem; }
+  .blk.data { background: var(--steel-wash); border-color: color-mix(in srgb, var(--steel) 40%, var(--line)); color: var(--ink); }
+  .blk.trailer { background: var(--brass-wash); border-color: color-mix(in srgb, var(--brass) 40%, var(--line)); color: var(--ink); }
+
+  /* offline model */
+  .offline-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 16px; align-items: start; }
+  .offline-grid .fig-frame { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(14px, 2.4vw, 24px); box-shadow: var(--shadow); overflow-x: auto; }
+  .checks { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px 20px; }
+  .checks h3 { margin-bottom: 10px; }
+  .checks ol { margin: 0; padding-left: 20px; }
+  .checks li { font-size: .88rem; color: var(--ink-soft); margin: 7px 0; }
+  .checks li b { color: var(--ink); font-weight: 600; }
+  .caveat { margin-top: 18px; display: flex; gap: 12px; align-items: flex-start; background: color-mix(in srgb, var(--warn-wash) 45%, var(--surface)); border: 1px dashed var(--warn); border-radius: var(--radius); padding: 14px 16px; }
+  .caveat .tag { font-family: "IBM Plex Mono", monospace; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--warn); font-weight: 600; white-space: nowrap; padding-top: 2px; }
+  .caveat .body { font-size: .86rem; color: var(--ink-soft); }
+  .caveat .body b { color: var(--ink); }
+  @media (max-width: 820px) { .offline-grid { grid-template-columns: 1fr; } }
+
+  .endnote { padding: 40px 0 64px; color: var(--ink-soft); font-size: .88rem; }
+  .endnote .mono { font-family: "IBM Plex Mono", monospace; color: var(--ink); font-size: .84rem; }
+
+  @media (max-width: 760px) {
+    .cardviz { grid-template-columns: 1fr; }
+    .step { grid-template-columns: 40px 1fr; }
+    .step .ds { grid-column: 1 / -1; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<header class="hero">
+  <button class="toggle" id="themeToggle" aria-label="切換明暗主題">◐ 主題</button>
+  <div class="wrap hero-inner">
+    <div class="eyebrow">飯店電子鎖 · 13.56MHz 感應卡發卡流程</div>
+    <h1>自助報到發卡流程</h1>
+    <p class="lead">
+      飯店自助報到機串接<b>自動發卡機(Card Dispenser)</b>:卡匣堆疊數百張空白
+      Mifare Classic 卡,由馬達逐張推出,途中完成<b>讀卡判斷 → 寫入房卡資料 → 回讀驗證</b>,
+      再送給旅客。真正的難點不在 happy path,而在每一步都可能失敗時,
+      機器如何<b>安全收斂</b>——重試、吞卡換卡、還是停機告警。
+    </p>
+    <div class="chips">
+      <span class="chip"><b>.NET&nbsp;10</b></span>
+      <span class="chip">卡片&nbsp;· <b>Mifare&nbsp;Classic&nbsp;1K</b></span>
+      <span class="chip">DESFire&nbsp;· <b>部分支援</b></span>
+      <span class="chip">機構&nbsp;· <b>推卡&nbsp;/&nbsp;吞卡&nbsp;/&nbsp;回收</b></span>
+      <span class="chip">狀態機&nbsp;+&nbsp;<b>Fallback</b></span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ 流程圖 ============ -->
+  <section id="flow">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">主流程 · 含所有 fallback 分支</div>
+        <h2>發卡流程圖</h2>
+        <p class="lead">綠色為成功終點、黃色為需人工善後的收斂終點、紅色為錯誤停機。
+          每一個菱形都是一次「感測或判斷」,決定往下走、重試、還是吞卡換卡。</p>
+      </div>
+
+      <div class="legend">
+        <span><i class="sw proc"></i> 動作 / 判斷</span>
+        <span><i class="sw ok"></i> 成功完成</span>
+        <span><i class="sw warn"></i> 卡片回收收斂</span>
+        <span><i class="sw err"></i> 錯誤停機 / 中止</span>
+      </div>
+
+      <figure>
+        <div class="mermaid-paper">
+<pre class="mermaid">
+%%{init: {'theme':'neutral', 'themeVariables':{'fontFamily':'IBM Plex Sans, Noto Sans TC, sans-serif','fontSize':'14px'}}}%%
+flowchart TD
+  START([旅客開始報到]) --> STOCK{卡匣有卡？<br/>庫存 sensor＋計數}
+  STOCK -->|否| OOS[卡匣空<br/>通知櫃檯補卡<br/>中止交易]
+  STOCK -->|是| DISP[馬達推卡至讀寫位置]
+  DISP --> GATE{閘門 sensor<br/>偵測到卡到位？}
+  GATE -->|否| DRETRY{推卡重試<br/>未達上限？}
+  DRETRY -->|是| DISP
+  DRETRY -->|否| JAM[卡片卡住<br/>停機告警・人工處理]
+  GATE -->|是| POS[定位到 RF／IC 讀寫頭]
+  POS --> READ{讀卡判斷<br/>型別・UID・是否空白可用}
+  READ -->|讀失敗／非空白／未知卡| RRETRY{讀取重試<br/>未達上限？}
+  RRETRY -->|是| READ
+  RRETRY -->|否| CAPCHK
+  READ -->|空白可用卡| WRITE[寫入房卡資料<br/>房號・效期・門禁權限]
+  WRITE --> WOK{寫入成功？}
+  WOK -->|否| WRETRY{寫入重試<br/>未達上限？}
+  WRETRY -->|是| WRITE
+  WRETRY -->|否| CAPCHK
+  WOK -->|是| VERIFY{回讀驗證<br/>比對寫入內容}
+  VERIFY -->|不一致| WRETRY
+  VERIFY -->|一致| EJECT[推送出卡給旅客]
+  EJECT --> TAKE{旅客於逾時內取卡？}
+  TAKE -->|是| DONE([完成<br/>庫存 −1・寫交易記錄])
+  TAKE -->|否| RCAPCHK{回收艙已滿？}
+  RCAPCHK -->|否| RECAP[基於安全吞卡回收<br/>記錄＋通知櫃檯]
+  RCAPCHK -->|是| BINFULL
+  RECAP --> DONER([結束<br/>卡片已回收・待櫃檯協助])
+  CAPCHK{回收艙已滿？} -->|是| BINFULL[回收艙滿<br/>告警・需清艙]
+  CAPCHK -->|否| CFORM[吞卡至回收艙]
+  CFORM --> SWAP{交易換卡<br/>未達上限？}
+  SWAP -->|是| STOCK
+  SWAP -->|否| ABORT[換卡超過上限<br/>中止交易・告警]
+
+  classDef ok fill:#dcefe1,stroke:#2f7a4c,color:#14321f;
+  classDef warn fill:#f4e8cf,stroke:#a9781f,color:#3a2c0c;
+  classDef err fill:#f4dedc,stroke:#ad3a37,color:#3a1513;
+  class DONE ok;
+  class DONER warn;
+  class OOS,JAM,BINFULL,ABORT err;
+</pre>
+        </div>
+        <div class="paper-note">流程圖固定使用淺色底,確保在深色模式下同樣清晰。</div>
+        <figcaption>
+          三條退場路線各有不同語意:<b>吞卡換卡</b>(讀寫失敗,自動換下一張,對旅客無感)、
+          <b>吞卡回收</b>(旅客沒取走,基於安全收回並通知櫃檯)、<b>停機告警</b>(卡住或艙滿,
+          需人工介入,不可盲目重試)。「交易換卡上限」是防止讀寫持續失敗把整個卡匣吞光的關鍵閘。
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ 狀態管線 ============ -->
+  <section id="states">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">狀態機 · 正常路徑</div>
+        <h2>發卡狀態管線</h2>
+        <p class="lead">後端用一個明確的狀態驅動整條流程;每一步都綁定一個實體感測或卡片操作,
+          失敗時才有依據決定往哪個 fallback 收斂。</p>
+      </div>
+      <div class="pipe">
+        <div class="step"><div class="num">1</div><div class="nm">庫存偵測<span class="mono">StockCheck</span></div><div class="ds">卡匣 sensor + 邏輯計數。<b>空 → OutOfStock</b>,通知櫃檯補卡</div></div>
+        <div class="step"><div class="num">2</div><div class="nm">推卡到位<span class="mono">Dispensing</span></div><div class="ds">馬達把卡從卡匣推到讀寫位置,閘門 sensor 確認到位。<b>沒到位 → 重推 → Jam</b></div></div>
+        <div class="step"><div class="num">3</div><div class="nm">定位<span class="mono">Positioning</span></div><div class="ds">把卡對準 RF／IC 讀寫頭</div></div>
+        <div class="step"><div class="num">4</div><div class="nm">讀卡判斷<span class="mono">Reading</span></div><div class="ds">辨識卡片型別、讀 UID、確認是<b>空白可用卡</b>(能用預設 key 驗證)</div></div>
+        <div class="step"><div class="num">5</div><div class="nm">寫卡<span class="mono">Writing</span></div><div class="ds">對 sector authenticate 後,寫入<b>房號、效期、門禁權限</b></div></div>
+        <div class="step"><div class="num">6</div><div class="nm">回讀驗證<span class="mono">Verifying</span></div><div class="ds">讀回剛寫入的 block 逐一比對,不一致視同寫失敗</div></div>
+        <div class="step"><div class="num">7</div><div class="nm">出卡<span class="mono">Ejecting</span></div><div class="ds">把卡推到出卡口呈現給旅客</div></div>
+        <div class="step"><div class="num">8</div><div class="nm">等待取卡<span class="mono">WaitGuestTake</span></div><div class="ds">逾時未取 → <b>基於安全吞卡回收</b></div></div>
+        <div class="step"><div class="num">9</div><div class="nm">完成<span class="mono">Completed</span></div><div class="ds">庫存 −1、寫交易記錄</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Fallback 矩陣 ============ -->
+  <section id="fallback">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">可靠性 · 核心賣點</div>
+        <h2>Fallback 矩陣</h2>
+        <p class="lead">設計審查時最常被追問的就是這張表:每種故障怎麼<b>偵測</b>、當下怎麼<b>處置</b>、系統往哪裡<b>收斂</b>。
+          原則是——機械類失敗謹慎重試、卡片類失敗吞卡換卡、資源類耗盡直接停機,絕不盲目動作。</p>
+      </div>
+      <div class="tbl-frame">
+        <table>
+          <thead>
+            <tr><th>故障情境</th><th>偵測方式</th><th>處置</th><th>收斂結果</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>卡匣空</b></td>
+              <td class="dim">庫存 sensor + 計數為 0</td>
+              <td><span class="pill stop">中止</span> 不推卡</td>
+              <td>通知櫃檯補卡</td>
+            </tr>
+            <tr>
+              <td><b>推卡未到位 / 卡住</b></td>
+              <td class="dim">推卡後閘門 sensor 逾時未偵測到卡</td>
+              <td><span class="pill retry">重試</span> 有限次重推;仍失敗 → <span class="pill stop">停機</span></td>
+              <td>Jam 告警,人工排除(避免疊卡)</td>
+            </tr>
+            <tr>
+              <td><b>讀卡失敗 / 非空白卡</b></td>
+              <td class="dim">讀不到 UID、型別未知、或非可用空白卡</td>
+              <td><span class="pill retry">重試</span> 重讀;仍失敗 → <span class="pill swap">吞卡換卡</span></td>
+              <td>問題卡進回收艙,換下一張重來(對旅客無感)</td>
+            </tr>
+            <tr>
+              <td><b>寫卡失敗 / 驗證不符</b></td>
+              <td class="dim">authenticate 失敗、寫入錯誤、或回讀比對不一致</td>
+              <td><span class="pill retry">重試</span> 重寫;仍失敗 → <span class="pill swap">吞卡換卡</span></td>
+              <td>瑕疵卡進回收艙,換新卡(不可把寫壞的卡發出去)</td>
+            </tr>
+            <tr>
+              <td><b>旅客逾時未取卡</b></td>
+              <td class="dim">出卡後等待逾時,出卡口 sensor 仍偵測到卡</td>
+              <td><span class="pill swap">吞卡回收</span></td>
+              <td>基於安全收回 + 記錄,通知櫃檯協助</td>
+            </tr>
+            <tr>
+              <td><b>回收艙滿</b></td>
+              <td class="dim">吞卡前檢查回收艙 sensor</td>
+              <td><span class="pill stop">停機</span> 不硬吞</td>
+              <td>告警,需清艙後才能繼續</td>
+            </tr>
+            <tr>
+              <td><b>換卡超過上限</b></td>
+              <td class="dim">單筆交易累計換卡數達上限</td>
+              <td><span class="pill stop">中止交易</span></td>
+              <td>告警,避免讀寫連續失敗把卡匣吞光</td>
+            </tr>
+            <tr>
+              <td><b>機台通訊逾時</b></td>
+              <td class="dim">與發卡機指令 / 回應逾時</td>
+              <td><span class="pill stop">安全狀態</span> 收斂中止</td>
+              <td>不卡死流程,回報上層由人工或重啟處理</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Mifare 卡結構 ============ -->
+  <section id="card">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">卡片格式</div>
+        <h2>房卡資料寫在哪</h2>
+        <p class="lead">飯店智慧門鎖常走 13.56MHz 高頻卡,以 Mifare Classic 為主、DESFire 部分支援。
+          讀寫前要先對 sector 認證,房卡資料寫進指定的 data sector。</p>
+      </div>
+      <div class="cardviz">
+        <div class="panel">
+          <h3>Mifare Classic 1K</h3>
+          <p><span class="mono">16 sector × 4 block × 16 bytes</span>。每個 sector 的最後一個 block 是
+            <b>sector trailer</b>,存 Key A + access bits + Key B;讀寫該 sector 前必須先用 Key A 或 B
+            <b>authenticate</b>。sector 0 的 block 0 是製造商區(UID),唯讀。</p>
+          <p>下圖為單一 data sector 的 4 個 block:前三塊放房卡資料,最後一塊是控制存取的 trailer。</p>
+          <div class="sector" role="img" aria-label="Mifare Classic 單一 sector 的四個 block:三塊資料 block 加一塊 sector trailer">
+            <div class="blk data"><span class="bn">block 0</span>房號・效期</div>
+            <div class="blk data"><span class="bn">block 1</span>門禁權限</div>
+            <div class="blk data"><span class="bn">block 2</span>CRC16 校驗／備用</div>
+            <div class="blk trailer"><span class="bn">block 3</span>Key A · AC · Key B</div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>DESFire(部分支援)</h3>
+          <p>資料以 <b>application → file</b> 組織,支援 <span class="mono">AES/3DES</span> 雙向認證與
+            <b>檔案級權限</b>,安全性高於 Classic。本模擬用輕量抽象表示,已實作 AES128 的 3-pass 挑戰-應答互相認證與 session key 衍生(見 Part C),通過認證後才可讀寫 file;CMAC、command counter、secure messaging 與完整 application/file 權限矩陣則刻意省略。</p>
+          <p><b>為何辨型別重要:</b>讀卡階段要先判斷是 Classic 還是 DESFire,才知道用哪套認證與寫入方式;
+            判斷錯誤會直接導致認證失敗,落入吞卡換卡分支。</p>
+          <p style="margin-top:14px;color:var(--warn);"><b>安全提醒:</b>Mifare 出廠預設 key
+            <span class="mono">FFFFFFFFFFFF</span> 是公開值,正式環境務必做
+            <b>key diversification</b>(每卡/每案場衍生不同金鑰),否則等同無保護。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 離線 data-on-card 模型 ============ -->
+  <section id="offline">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">離線鎖 · data-on-card 擬真模型</div>
+        <h2>離線 data-on-card 驗證</h2>
+        <p class="lead">飯店離線鎖(autonomous lock)是<b>離線</b>的:門鎖不連網,權限與效期<b>寫在卡片上</b>,
+          鎖用自己的時鐘離線驗證。退房不必碰鎖——新卡的遞增序號在鎖首次讀到時就把舊卡蓋掉。</p>
+      </div>
+
+      <div class="offline-grid">
+        <figure>
+          <div class="fig-frame">
+            <svg viewBox="0 0 780 360" role="img" aria-label="離線 data-on-card 模型:前台 encoder 把已簽章的房卡憑證寫入卡片,旅客持卡至離線房門鎖,鎖用自身時鐘與記錄的序號離線驗證;母卡佈建門鎖;退房重發序號更大的新卡即可讓舊卡失效">
+              <defs>
+                <marker id="oa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+                <marker id="oa-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--brass)"/></marker>
+              </defs>
+              <g font-family="IBM Plex Sans, Noto Sans TC, sans-serif">
+                <!-- setup card -->
+                <rect x="556" y="16" width="204" height="52" rx="8" fill="var(--brass-wash)" stroke="var(--brass)"/>
+                <text x="658" y="38" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">母卡 · 設定卡</text>
+                <text x="658" y="55" text-anchor="middle" font-size="10" fill="var(--ink-soft)" font-family="IBM Plex Mono, monospace">PropertyId·DoorId·SiteKey·校時</text>
+                <line x1="658" y1="68" x2="658" y2="108" stroke="var(--brass)" stroke-width="1.8" marker-end="url(#oa-b)"/>
+                <text x="668" y="93" font-size="11" fill="var(--brass-deep)">佈建</text>
+
+                <!-- encoder -->
+                <rect x="18" y="112" width="150" height="76" rx="9" fill="var(--brass-wash)" stroke="var(--brass)"/>
+                <text x="93" y="143" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--ink)">前台 encoder</text>
+                <text x="93" y="162" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">代表性 SDK</text>
+
+                <line x1="168" y1="150" x2="286" y2="150" stroke="currentColor" stroke-width="2" marker-end="url(#oa)"/>
+                <text x="227" y="142" text-anchor="middle" font-size="11" fill="var(--ink)">寫入簽章憑證</text>
+
+                <!-- card -->
+                <rect x="292" y="100" width="196" height="118" rx="9" fill="var(--steel-wash)" stroke="var(--steel)"/>
+                <text x="390" y="122" text-anchor="middle" font-size="12.5" font-weight="600" fill="var(--ink)">房卡 · data-on-card</text>
+                <g font-size="10.5" fill="var(--ink)" font-family="IBM Plex Mono, monospace">
+                  <text x="306" y="144">案場 PropertyId</text>
+                  <text x="306" y="161">房號 / 門群</text>
+                  <text x="306" y="178">效期 from–to</text>
+                  <text x="306" y="195">權限 bitmap</text>
+                  <text x="306" y="212">序號 seq · 簽章 MAC</text>
+                </g>
+
+                <line x1="488" y1="150" x2="552" y2="150" stroke="currentColor" stroke-width="2" marker-end="url(#oa)"/>
+                <text x="520" y="142" text-anchor="middle" font-size="10.5" fill="var(--ink)">旅客持卡</text>
+
+                <!-- lock -->
+                <rect x="556" y="112" width="204" height="76" rx="9" fill="var(--surface-2)" stroke="var(--ink-faint)"/>
+                <text x="658" y="143" text-anchor="middle" font-size="13.5" font-weight="600" fill="var(--ink)">房門鎖(離線)</text>
+                <text x="658" y="162" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">自身 RTC · 記錄各門序號</text>
+
+                <!-- sequence cancellation strip -->
+                <rect x="18" y="248" width="742" height="96" rx="9" fill="color-mix(in srgb, var(--warn-wash) 50%, var(--surface))" stroke="var(--warn)"/>
+                <text x="34" y="272" font-size="12.5" font-weight="600" fill="var(--ink)">退房蓋卡:不需碰鎖、不需連網</text>
+                <rect x="34" y="286" width="126" height="42" rx="7" fill="var(--surface)" stroke="var(--steel)"/>
+                <text x="97" y="303" text-anchor="middle" font-size="11" fill="var(--ink)">新卡 seq = n+1</text>
+                <text x="97" y="319" text-anchor="middle" font-size="9.5" fill="var(--ink-soft)" font-family="IBM Plex Mono, monospace">下一位旅客</text>
+                <line x1="160" y1="307" x2="242" y2="307" stroke="currentColor" stroke-width="1.8" marker-end="url(#oa)"/>
+                <text x="201" y="300" text-anchor="middle" font-size="10" fill="var(--ink-soft)">首次刷</text>
+                <rect x="244" y="286" width="158" height="42" rx="7" fill="var(--surface)" stroke="var(--ink-faint)"/>
+                <text x="323" y="303" text-anchor="middle" font-size="11" fill="var(--ink)">鎖記錄序號 = n+1</text>
+                <text x="323" y="319" text-anchor="middle" font-size="9.5" fill="var(--ink-soft)" font-family="IBM Plex Mono, monospace">離線更新</text>
+                <line x1="402" y1="307" x2="484" y2="307" stroke="currentColor" stroke-width="1.8" marker-end="url(#oa)"/>
+                <rect x="486" y="286" width="260" height="42" rx="7" fill="var(--err-wash)" stroke="var(--err)"/>
+                <text x="616" y="303" text-anchor="middle" font-size="11" fill="var(--ink)">舊卡 seq = n &lt; n+1 → 之後被拒</text>
+                <text x="616" y="319" text-anchor="middle" font-size="9.5" fill="var(--ink-soft)" font-family="IBM Plex Mono, monospace">舊卡自動失效</text>
+              </g>
+            </svg>
+          </div>
+          <figcaption>發卡是<b>離線</b>的一次性動作:encoder 把簽章憑證寫進卡,之後鎖與卡自成一組、不需連網。
+            退房只要發一張<b>序號更大</b>的新卡,鎖首次讀到就把舊卡比下去——這是離線鎖「不回收舊卡也能作廢」的關鍵。</figcaption>
+        </figure>
+
+        <div class="checks">
+          <h3>離線驗證的 6 道關卡</h3>
+          <ol>
+            <li><b>已佈建?</b> 鎖是否已用母卡設定過(否則一律拒絕)</li>
+            <li><b>簽章有效?</b> 用案場 SiteKey 驗 MAC,擋竄改與異案場卡</li>
+            <li><b>案場相符?</b> PropertyId 與本鎖一致</li>
+            <li><b>在效期內?</b> 鎖 RTC 落在 from–to 之間(過期／未生效即拒)</li>
+            <li><b>門權限相符?</b> 房號／門群涵蓋本門</li>
+            <li><b>序號夠新?</b> seq ≥ 鎖記錄值,通過後更新記錄(舊卡即失效)</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="caveat">
+        <div class="tag">誠信提醒</div>
+        <div class="body">飯店電子鎖廠商的 encoder <b>SDK 通常未公開文件</b>,本頁與程式的 encoder 介面以
+          <b>代表性抽象</b>模擬,非任何廠商的真實專有 API。採用的是可查證的產業通用架構模型:離線 autonomous 運作、
+          Mifare Classic + DESFire、設定卡佈建門鎖、飯店 PMS + API 整合。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 模擬 vs 正式 ============ -->
+  <section id="prod">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">落地</div>
+        <h2>模擬 vs 正式硬體</h2>
+        <p class="lead">附帶的 C# 程式把整條流程與所有 fallback 用「故障注入」跑給人看;
+          換成真實機台時,架構不變,只是把模擬硬體換成廠商指令集。</p>
+      </div>
+      <div class="tbl-frame">
+        <table>
+          <thead>
+            <tr><th>維度</th><th>本模擬</th><th>正式硬體</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>硬體介面</b></td><td class="dim">記憶體模擬 + 故障注入</td><td>真實發卡機走 RS-232／USB 廠商指令集(如 CRT-591 類收發卡模組)</td></tr>
+            <tr><td><b>庫存偵測</b></td><td class="dim">記憶體卡堆疊 + 計數</td><td>實體卡匣 sensor + 後端庫存服務對帳</td></tr>
+            <tr><td><b>卡片金鑰</b></td><td class="dim">出廠預設 <span class="mono">FFFFFFFFFFFF</span></td><td>key diversification,金鑰由 HSM／KMS 管理</td></tr>
+            <tr><td><b>感測回饋</b></td><td class="dim">布林旗標模擬 sensor</td><td>閘門／出卡口／回收艙多組實體 sensor</td></tr>
+            <tr><td><b>交易記錄</b></td><td class="dim">Console log</td><td>PMS／後端寫入,含發卡稽核與異常告警</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap endnote">
+    <p>附帶的可編譯 C# 模擬(<span class="mono">.NET 10</span>)以 <span class="mono">ICardDispenserHardware</span>
+      抽象硬體,用故障注入逐一重現上圖每一條 fallback 路線——正常發卡、卡匣空、讀失敗換卡、
+      寫失敗換卡、旅客未取回收、卡住停機。Mifare Classic 卡結構與認證亦在其中建模。</p>
+  </div>
+
+</main>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('themeToggle');
+    var stored;
+    try { stored = localStorage.getItem('disp-theme'); } catch (e) { stored = null; }
+    if (stored === 'dark' || stored === 'light') root.setAttribute('data-theme', stored);
+    function current() {
+      var t = root.getAttribute('data-theme');
+      if (t) return t;
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    btn.addEventListener('click', function () {
+      var next = current() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('disp-theme', next); } catch (e) {}
+    });
+  })();
+</script>
+<script type="module">
+  // GitHub Pages 是純靜態 HTML,不像 Claude Artifact 會原生渲染 mermaid;
+  // 這裡自行載入 mermaid.js,把 <pre class="mermaid"> 轉成流程圖。
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
